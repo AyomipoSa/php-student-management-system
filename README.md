@@ -249,11 +249,6 @@ This project demonstrates practical understanding of:
 
 # Author
 
-Rosemary
-
----
-
-
 Sanni Ayomipo Rodiat
 
 ---
