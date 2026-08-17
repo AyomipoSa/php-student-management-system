@@ -246,6 +246,52 @@ This project demonstrates practical understanding of:
 * Exporting dynamic data to Excel
 
 ---
+## Architecture
+
+The application follows a lightweight layered structure that separates 
+data access, business logic, and presentation:
+
+**1. Data Layer (`classes/`)**
+- `Database.php` — handles the MySQL connection and prepared statements, 
+  centralizing all direct database access so no other file talks to 
+  MySQL directly.
+- `Student.php`, `City.php`, `Language.php` — model classes that wrap 
+  CRUD operations for their respective tables (e.g. `Student::create()`, 
+  `Student::findAll()`), keeping query logic out of the page-level files.
+
+**2. Business Logic / Controllers (root-level `.php` files)**
+Files like `students.php`, `login_process.php`, `register_process.php`, 
+`manage_cities.php`, `manage_languages.php`, and `export_students` act 
+as controllers: each receives a request, calls the relevant model 
+class, and decides which template to render. For example, `students.php` 
+calls `Student::findAll()` (optionally filtered by search or paginated), 
+then passes the results to the `templates/students/` view.
+
+**3. Presentation Layer (`templates/`)**
+Templates are grouped by feature — `auth/` for login and registration, 
+`students/` for student CRUD views, `manage/` for cities and languages, 
+and `partials/` for shared pieces like the navbar or pagination controls 
+— so templates only render markup using data passed in from the 
+controller, rather than querying the database directly.
+
+**4. Data Model**
+The MySQL schema is relational: `students`, `cities`, and `languages` 
+are separate tables. A junction table connects students and languages 
+to support the many-to-many relationship (a student can speak multiple 
+languages, and a language can belong to multiple students), while 
+cities are a one-to-many relationship with students.
+
+**Testing (`Test.php`)**
+A standalone script used to exercise the model classes directly — useful 
+for verifying `Student`, `City`, and `Language` CRUD logic independent 
+of the UI layer.
+
+**Typical request flow (viewing a student list):**
+`index.php` → session check → `students.php` (controller) → 
+`Student::findAll()` in `classes/Student.php` → results passed to 
+`templates/students/` for rendering.
+
+---
 
 # Author
 
